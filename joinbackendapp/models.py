@@ -14,6 +14,7 @@ class Priority(models.Model):
     
 class Contact(models.Model):
     name = models.CharField(max_length=200)
+    initials = models.CharField(max_length=3, blank=True, null=True)
     email= models.CharField(max_length=150)
     color = models.CharField(max_length=15)
     phone= models.CharField(max_length=150)
@@ -22,6 +23,15 @@ class Contact(models.Model):
     def __str__(self):
         return self.name
     
+    def calculate_initials(self):
+        names = self.name.split()
+        initials = ''.join([name[0].upper() for name in names if name])
+        return initials
+        
+    def save(self, *args, **kwargs):
+        self.initials = self.calculate_initials()
+        super(Contact, self).save(*args, **kwargs)
+        
 class Category(models.Model):
     title = models.CharField(max_length=100)
     color = models.CharField(max_length= 15)
@@ -44,7 +54,7 @@ class Task(models.Model):
     created = models.DateField(default=datetime.date.today)
     due_date = models.DateTimeField(null=True, blank=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True, blank=True)
-   # assigned = models.ForeignKey(Contact, on_delete=models.CASCADE, null=True, blank=True)
+    assigned = models.ManyToManyField(Contact, related_name='tasks', blank=True)
     # subtask = models.ForeignKey(Subtask, on_delete=models.CASCADE, null=True, blank=True)
     priority = models.ForeignKey(Priority, on_delete=models.CASCADE, null=True, blank=True)
     status = models.ForeignKey(Status,  on_delete=models.CASCADE)
