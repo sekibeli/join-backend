@@ -4,7 +4,7 @@ from .views import TaskView
 from django.contrib import admin
 
 router = routers.DefaultRouter()
-router.register("tasks", TaskView, basename="TaskViewRoute")
+router.register(r'tasks', TaskView, basename="TaskViewRoute")
 
 urlpatterns = [
     # path('admin/', admin.site.urls),

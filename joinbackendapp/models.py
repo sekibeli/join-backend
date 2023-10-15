@@ -29,12 +29,7 @@ class Category(models.Model):
     def __str__(self):
         return self.title
     
-class Subtask(models.Model):
-    title= models.CharField(max_length=500)
-    completed=models.BooleanField(default= False)
-    
-    def __str__(self):
-        return self.title
+
 
 class Status(models.Model):
     title=  models.CharField(max_length=100)
@@ -49,10 +44,18 @@ class Task(models.Model):
     created = models.DateField(default=datetime.date.today)
     due_date = models.DateTimeField(null=True, blank=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True, blank=True)
-    assigned = models.ForeignKey(Contact, on_delete=models.CASCADE, null=True, blank=True)
-    subtask = models.ForeignKey(Subtask, on_delete=models.CASCADE, null=True, blank=True)
+   # assigned = models.ForeignKey(Contact, on_delete=models.CASCADE, null=True, blank=True)
+    # subtask = models.ForeignKey(Subtask, on_delete=models.CASCADE, null=True, blank=True)
     priority = models.ForeignKey(Priority, on_delete=models.CASCADE, null=True, blank=True)
     status = models.ForeignKey(Status,  on_delete=models.CASCADE)
     
     def __str__(self):
         return self.title   
+
+class Subtask(models.Model):
+    task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name='subtasks') 
+    title= models.CharField(max_length=500)
+    completed=models.BooleanField(default= False)
+    
+    def __str__(self):
+        return self.title

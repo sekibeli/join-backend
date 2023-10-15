@@ -20,7 +20,7 @@ class CategorySerializer(serializers.ModelSerializer):
 class SubtaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = Subtask
-        fields = '__all__'
+        fields = ('id', 'title', 'completed')
 
 class StatusSerializer(serializers.ModelSerializer):
     class Meta:
@@ -31,13 +31,13 @@ class StatusSerializer(serializers.ModelSerializer):
 class TaskSerializer(serializers.ModelSerializer):
     category = CategorySerializer()
     assigned = ContactSerializer()
-    subtask = SubtaskSerializer()
+    subtasks = SubtaskSerializer(many=True, read_only=True)
     priority = PrioritySerializer()
     status = StatusSerializer()
 
     class Meta:
         model = Task
-        fields = '__all__'
+        fields = ('id', 'title', 'description', 'author', 'created', 'due_date', 'category', 'assigned', 'subtasks', 'priority', 'status')
 
 class TaskUpdateSerializer(serializers.ModelSerializer):
     class Meta:
