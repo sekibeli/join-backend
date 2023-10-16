@@ -43,8 +43,10 @@ class ContactSerializer(serializers.ModelSerializer):
 
 class TaskSerializer(serializers.ModelSerializer):
     category = CategorySerializer()
-    assigned = ContactSerializer(many=True, read_only=True)
-    subtasks = SubtaskSerializer(many=True, read_only=True)  # Achten Sie darauf, dass Sie zuvor auch `SubtaskSerializer` definiert haben.
+    # assigned = ContactSerializer(many=True, read_only=True)
+    # subtasks = SubtaskSerializer(many=True, read_only=True)  # Achten Sie darauf, dass Sie zuvor auch `SubtaskSerializer` definiert haben.
+    assigned = serializers.PrimaryKeyRelatedField(many=True,  queryset=Contact.objects.all())
+    subtasks = serializers.PrimaryKeyRelatedField(many=True,  queryset=Subtask.objects.all())
     priority = PrioritySerializer()
     status = StatusSerializer()
 
