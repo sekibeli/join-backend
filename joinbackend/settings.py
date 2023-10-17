@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-*(1zxw9%^6!f8b+0)+=@3-+@8grpj8#f-)30+d!3&%@+&l&1*g
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    'joinbackend.pythonanywhere.com/',
+    'joinbackend.pythonanywhere.com',
     '127.00.1',
     'localhost',
 ]
