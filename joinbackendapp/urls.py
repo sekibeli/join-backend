@@ -8,6 +8,7 @@ router.register(r'tasks', TaskView, basename="TaskViewRoute")
 router.register(r'categories', CategoryView, basename="CategoryViewRoute")
 router.register(r'contacts', ContactView, basename="ContactViewRoute")
 
+
 urlpatterns = [
     # path('admin/', admin.site.urls),
     path("login/", LoginView.as_view(), name='login'),
