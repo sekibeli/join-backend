@@ -1,7 +1,15 @@
 from rest_framework import serializers
+from django.contrib.auth.models import User
 from .models import Task, Category, Contact, Subtask, Priority, Status
 
 # Serialisierer für die verknüpften Modelle
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'email')
+        
+        
 class PrioritySerializer(serializers.ModelSerializer):
     class Meta:
         model = Priority
