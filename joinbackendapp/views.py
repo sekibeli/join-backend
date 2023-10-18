@@ -1,9 +1,25 @@
 from django.shortcuts import render
+from django.contrib.auth import authenticate
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
 from rest_framework import viewsets
 from .models import Task, Category, Contact
 from .serializers import TaskSerializer, CategorySerializer, ContactSerializer
 
 # Create your views here.
+
+class LoginView(APIView):
+    def post(self, request):
+        email = request.data.get('email')
+        password = request.data.get('password')
+        user = authenticate(username=email, password=password)
+        if user:
+            return Response({'detail': 'Login successful'}, status=status.HTTP_200_OK)
+        else:
+            return Response({'detail': 'Invalid credentials'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        
 class TaskView(viewsets.ModelViewSet):
     serializer_class = TaskSerializer
  
