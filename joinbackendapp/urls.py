@@ -11,6 +11,6 @@ router.register(r'contacts', ContactView, basename="ContactViewRoute")
 
 urlpatterns = [
     # path('admin/', admin.site.urls),
-    path("/login/", LoginView.as_view(), name='login'),
+    path("login/", LoginView.as_view(), name='login'),
     path("", include(router.urls))
 ]
