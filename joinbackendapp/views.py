@@ -11,7 +11,7 @@ from .serializers import TaskSerializer, CategorySerializer, ContactSerializer
 
 class LoginView(APIView):
     def post(self, request):
-        email = request.data.get('email')
+        email = request.data.get('username')
         password = request.data.get('password')
         user = authenticate(username=email, password=password)
         if user:
