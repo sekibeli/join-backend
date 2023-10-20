@@ -49,12 +49,18 @@ class CategoryView(viewsets.ModelViewSet):
     serializer_class = CategorySerializer
  
     def get_queryset(self):
-        queryset = Category.objects.all()
-        return queryset
+       current_user = self.request.user #eingloggten user holen
+        
+       if current_user.is_authenticated:
+            return Category.objects.filter(author=current_user)
+       return Category.objects.none()
     
 class ContactView(viewsets.ModelViewSet):
     serializer_class = ContactSerializer
  
     def get_queryset(self):
-        queryset = Contact.objects.all()
-        return queryset
+        current_user = self.request.user #eingloggten user holen
+        
+        if current_user.is_authenticated:
+            return Contact.objects.filter(author=current_user)
+        return Contact.objects.none()

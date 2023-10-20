@@ -35,6 +35,7 @@ class Contact(models.Model):
 class Category(models.Model):
     title = models.CharField(max_length=100)
     color = models.CharField(max_length= 15)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return self.title
