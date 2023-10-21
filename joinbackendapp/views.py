@@ -2,9 +2,9 @@ from django.shortcuts import render
 from django.contrib.auth import authenticate
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status as http_status
 from rest_framework import viewsets
-from .models import Task, Category, Contact
+from .models import Status, Task, Category, Contact, Subtask, Priority
 from .serializers import TaskSerializer, CategorySerializer, ContactSerializer
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated
@@ -64,3 +64,53 @@ class ContactView(viewsets.ModelViewSet):
         if current_user.is_authenticated:
             return Contact.objects.filter(author=current_user)
         return Contact.objects.none()
+    
+    
+class CreateTaskWithSubtasks(APIView):
+    def post(self, request):
+        if request.method == 'POST':
+            task_data = request.data
+
+            # Zuerst die Kategorie und Priorität aus den Daten extrahieren
+            category_data = task_data.get('category', {})
+            priority_data = task_data.get('priority', '')
+            print(category_data)
+
+            # Kategorie und Priorität aus den Daten extrahieren und erstellen
+            category = Category.objects.get(id=category_data['id'])
+            priority = Priority.objects.get(title=priority_data)
+
+            # Stelle sicher, dass assigned_data immer eine Liste ist
+            assigned_data = task_data.get('assigned', [])
+
+            status_data = task_data.get('status', '')
+            status = Status.objects.get(title=status_data) 
+            
+            # Erstelle die Task-Instanz und setze die anderen Felder
+            task = Task.objects.create(
+                title=task_data['title'],
+                description=task_data['description'],
+                category=category,
+                dueDate=task_data['dueDate'],
+                priority=priority,
+                status=status,
+            )
+
+            # Verwende assigned_data, um die Many-to-Many-Beziehung festzulegen
+            assigned_ids = [contact['id'] for contact in assigned_data]
+            task.assigned.set(assigned_ids)
+
+            # Subaufgaben verarbeiten und speichern
+            subtasks_data = task_data.get('subtasks', [])
+            subtasks = []
+            for subtask_info in subtasks_data:
+                subtask = Subtask(
+                    task=task,
+                    title=subtask_info.get('title', ''),
+                    completed=subtask_info.get('completed', False)
+                )
+                subtask.save()
+                subtasks.append(subtask)
+
+            return Response(status=http_status.HTTP_201_CREATED)
+        return Response(status=http_status.HTTP_400_BAD_REQUEST)

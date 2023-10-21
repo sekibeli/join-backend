@@ -53,7 +53,7 @@ class Task(models.Model):
     description = models.TextField()
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
     created = models.DateField(default=datetime.date.today)
-    due_date = models.DateTimeField(null=True, blank=True)
+    dueDate = models.DateTimeField(null=True, blank=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True, blank=True)
     assigned = models.ManyToManyField(Contact, related_name='tasks', blank=True)
     # subtask = models.ForeignKey(Subtask, on_delete=models.CASCADE, null=True, blank=True)
