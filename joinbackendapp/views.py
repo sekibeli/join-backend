@@ -67,17 +67,21 @@ class ContactView(viewsets.ModelViewSet):
     
     
 class CreateTaskWithSubtasks(APIView):
+   
     def post(self, request):
+        current_user = self.request.user
         if request.method == 'POST':
             task_data = request.data
 
             # Zuerst die Kategorie und Priorität aus den Daten extrahieren
             category_data = task_data.get('category', {})
             priority_data = task_data.get('priority', '')
-            print(category_data)
-
+           
             # Kategorie und Priorität aus den Daten extrahieren und erstellen
-            category = Category.objects.get(id=category_data['id'])
+            try:
+                category = Category.objects.get(id=category_data['id'])
+            except Category.DoesNotExist:
+                print('Category existiert nicht')
             priority = Priority.objects.get(title=priority_data)
 
             # Stelle sicher, dass assigned_data immer eine Liste ist
@@ -94,6 +98,7 @@ class CreateTaskWithSubtasks(APIView):
                 dueDate=task_data['dueDate'],
                 priority=priority,
                 status=status,
+                author=current_user,
             )
 
             # Verwende assigned_data, um die Many-to-Many-Beziehung festzulegen
@@ -111,6 +116,6 @@ class CreateTaskWithSubtasks(APIView):
                 )
                 subtask.save()
                 subtasks.append(subtask)
-
+         
             return Response(status=http_status.HTTP_201_CREATED)
         return Response(status=http_status.HTTP_400_BAD_REQUEST)
