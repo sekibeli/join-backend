@@ -52,7 +52,6 @@ class CategoryView(viewsets.ModelViewSet):
        current_user = self.request.user #eingloggten user holen
         
        if current_user.is_authenticated:
-           
             return Category.objects.filter(author=current_user)
        return Category.objects.none()
    
@@ -61,11 +60,9 @@ class CategoryView(viewsets.ModelViewSet):
              category = Category.objects.create(
                  title=self.request.data['title'],
                  color=self.request.data['color'],
-                 #author=current_user['id']
-             )
-             category.save()
-             serializer.save(author=self.request.user)
-    
+                 author=self.request.user
+                )
+             
 class ContactView(viewsets.ModelViewSet):
     serializer_class = ContactSerializer
  

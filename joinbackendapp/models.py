@@ -38,7 +38,7 @@ class Category(models.Model):
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
-        return self.title
+        return f'{self.id}. {self.title}' 
     
 
 
