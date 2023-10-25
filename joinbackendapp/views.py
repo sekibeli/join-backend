@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework import status as http_status
 from rest_framework import viewsets
 from .models import Status, Task, Category, Contact, Subtask, Priority
-from .serializers import TaskSerializer, CategorySerializer, ContactSerializer
+from .serializers import SubtaskSerializer, TaskSerializer, CategorySerializer, ContactSerializer
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated
 
@@ -73,7 +73,33 @@ class ContactView(viewsets.ModelViewSet):
             return Contact.objects.filter(author=current_user)
         return Contact.objects.none()
     
+class SubtaskView(viewsets.ModelViewSet):
+    serializer_class = SubtaskSerializer
     
+    def get_queryset(self):
+        current_user = self.request.user #eingloggten user holen
+        subtask_ids = self.request.query_params.getlist('ids[]')  # Holt die Liste von IDs aus den Query-Parametern
+        
+        if current_user.is_authenticated:
+            if subtask_ids:
+                return Subtask.objects.filter(id__in=subtask_ids)  # Filtert Subtasks basierend auf den übergebenen IDs
+            return Subtask.objects.all()  # Oder irgendeine andere Standardlogik, die Sie möchten
+        return Subtask.objects.none()
+    
+
+class AssignedView(viewsets.ModelViewSet):
+    serializer_class = ContactSerializer
+    
+    def get_queryset(self):
+        current_user = self.request.user #eingloggten user holen
+        contact_ids = self.request.query_params.getlist('ids[]')  # Holt die Liste von IDs aus den Query-Parametern
+        
+        if current_user.is_authenticated:
+            if contact_ids:
+                return Contact.objects.filter(id__in=contact_ids)  # Filtert Subtasks basierend auf den übergebenen IDs
+            return Contact.objects.all()  # Oder irgendeine andere Standardlogik, die Sie möchten
+        return Contact.objects.none()
+       
 class CreateTaskWithSubtasks(APIView):
    
     def post(self, request):
