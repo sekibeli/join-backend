@@ -20,7 +20,7 @@ class PrioritySerializer(serializers.ModelSerializer):
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = '__all__'
+        fields = ('id', 'title','color','author')
 
 class SubtaskSerializer(serializers.ModelSerializer):
     class Meta:
@@ -30,7 +30,7 @@ class SubtaskSerializer(serializers.ModelSerializer):
 class StatusSerializer(serializers.ModelSerializer):
     class Meta:
         model = Status
-        fields = '__all__'
+        fields = ('id', 'title')
 
 # Hauptserialisierer für das Task-Modell
 
@@ -51,13 +51,26 @@ class ContactSerializer(serializers.ModelSerializer):
 
 class TaskSerializer(serializers.ModelSerializer):
     category = CategorySerializer()
-    # assigned = ContactSerializer(many=True, read_only=True)
-    # subtasks = SubtaskSerializer(many=True, read_only=True)  # Achten Sie darauf, dass Sie zuvor auch `SubtaskSerializer` definiert haben.
     assigned = serializers.PrimaryKeyRelatedField(many=True,  queryset=Contact.objects.all())
     subtasks = serializers.PrimaryKeyRelatedField(many=True,  queryset=Subtask.objects.all())
     priority = PrioritySerializer()
     status = StatusSerializer()
+    status_id = serializers.IntegerField(write_only=True, required=False)
 
     class Meta:
         model = Task
-        fields = ('id', 'title', 'description', 'author', 'created', 'dueDate', 'category', 'assigned', 'subtasks', 'priority', 'status')
+        fields = ('id', 'title', 'description', 'author', 'created', 'dueDate', 'category', 'assigned', 'subtasks', 'priority', 'status', 'status_id')
+        
+    def update(self, instance, validated_data):
+        status_id = validated_data.pop('status_id', None)
+        print('StatusId neu:', status_id)
+        
+        if status_id:
+            instance.status = Status.objects.get(id=status_id)
+
+        # Hier aktualisieren Sie alle anderen Felder des Task-Modells
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+
+        instance.save()
+        return instance

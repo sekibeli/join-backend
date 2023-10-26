@@ -56,12 +56,7 @@ class CategoryView(viewsets.ModelViewSet):
        return Category.objects.none()
    
     def perform_create(self, serializer):
-         if (self.request.method == "POST"):
-             category = Category.objects.create(
-                 title=self.request.data['title'],
-                 color=self.request.data['color'],
-                 author=self.request.user
-                )
+            serializer.save(author=self.request.user)
              
 class ContactView(viewsets.ModelViewSet):
     serializer_class = ContactSerializer
