@@ -65,7 +65,7 @@ class ContactView(viewsets.ModelViewSet):
         current_user = self.request.user #eingloggten user holen
         
         if current_user.is_authenticated:
-            return Contact.objects.filter(author=current_user)
+            return Contact.objects.filter(author=current_user).order_by('name')
         return Contact.objects.none()
     
 class SubtaskView(viewsets.ModelViewSet):
