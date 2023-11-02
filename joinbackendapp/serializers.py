@@ -74,3 +74,72 @@ class TaskSerializer(serializers.ModelSerializer):
 
         instance.save()
         return instance
+
+    # def update(self, instance, validated_data):
+    #     instance.title = validated_data.get('title', instance.title)
+    #     instance.description = validated_data.get('description', instance.description)
+    #     instance.category = validated_data.get('category', instance.category)
+    #     instance.dueDate = validated_data.get('dueDate', instance.dueDate)
+    #     instance.priority = validated_data.get('priority', instance.priority)
+    #     instance.status = validated_data.get('status', instance.status)
+    #     assigned = validated_data.pop('assigned', None)
+    #     subtasks = validated_data.pop('subtasks', None)
+
+    #     if assigned:
+    #         instance.assigned.set(assigned)
+    #     # ... any other fields you want to update directly on the Task
+
+    #     # Update related Subtasks
+
+    #     if subtasks is not None:
+    #         for subtask_data in subtasks:
+    #             subtask_id = subtask_data.get('id', None)
+    #             if subtask_id:
+    #                 try:
+    #                     subtask = instance.subtasks.get(id=subtask_id)
+    #                     for attr, value in subtask_data.items():
+    #                         setattr(subtask, attr, value)
+    #                     subtask.save()
+    #                 except Subtask.DoesNotExist:
+    #                     raise serializers.ValidationError("Subtask with id %s does not exist" % subtask_id)
+    #             else:
+    #                 # If the subtask does not exist, create it
+    #                 Subtask.objects.create(user=instance.user, task=instance, **subtask_data)
+
+    #     instance.save()
+    #     return instance
+
+
+    def create(self, validated_data):
+        assignees_data = validated_data.pop('assigned', None)
+        subtasks_data = validated_data.pop('subtasks', None)
+        task = Task.objects.create(**validated_data)
+        if assignees_data:
+            task.assignees.set(assignees_data)
+        if subtasks_data:
+            for subtask_data in subtasks_data:
+                # You should include the user in the subtask_data
+                Subtask.objects.create(task=task, **subtask_data)
+        return task
+# class TaskSerializer(serializers.ModelSerializer):
+#     """Serializer for tasks."""
+
+#     subtasks = SubtaskSerializer(many=True)
+
+#     class Meta:
+#         model = Task
+#         fields = ['id', 'title', 'description', 'category', 'assignees', 'subtasks', 'due_date', 'priority', 'created_at', 'updated_at', 'list', 'order']
+#         read_only_fields = ['id', 'created_at', 'updated_at']
+#         write_only_fields = ['list']
+
+#     def create(self, validated_data):
+#         assignees_data = validated_data.pop('assignees', None)
+#         subtasks_data = validated_data.pop('subtasks', None)
+#         task = Task.objects.create(**validated_data)
+#         if assignees_data:
+#             task.assignees.set(assignees_data)
+#         if subtasks_data:
+#             for subtask_data in subtasks_data:
+#                 # You should include the user in the subtask_data
+#                 Subtask.objects.create(task=task, user=task.user, **subtask_data)
+#         return task

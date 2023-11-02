@@ -56,7 +56,6 @@ class Task(models.Model):
     dueDate = models.DateTimeField(null=True, blank=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True, blank=True)
     assigned = models.ManyToManyField(Contact, related_name='tasks', blank=True)
-    # subtask = models.ForeignKey(Subtask, on_delete=models.CASCADE, null=True, blank=True)
     priority = models.ForeignKey(Priority, on_delete=models.CASCADE, null=True, blank=True)
     status = models.ForeignKey(Status,  on_delete=models.CASCADE)
     

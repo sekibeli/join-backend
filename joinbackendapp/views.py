@@ -43,6 +43,12 @@ class TaskView(viewsets.ModelViewSet):
         if current_user.is_authenticated:
             return Task.objects.filter(author=current_user)
         return Task.objects.none()
+    
+    def perform_create(self, serializer):
+        """Create a new task."""
+        task = serializer.save(author=self.request.user)
+    
+    
        
     
 class CategoryView(viewsets.ModelViewSet):
@@ -78,7 +84,7 @@ class SubtaskView(viewsets.ModelViewSet):
         if current_user.is_authenticated:
             if subtask_ids:
                 return Subtask.objects.filter(id__in=subtask_ids)  # Filtert Subtasks basierend auf den übergebenen IDs
-            return Subtask.objects.all()  # Oder irgendeine andere Standardlogik, die Sie möchten
+            return Subtask.objects.all()  
         return Subtask.objects.none()
     
 
@@ -148,3 +154,6 @@ class CreateTaskWithSubtasks(APIView):
          
             return Response(status=http_status.HTTP_201_CREATED)
         return Response(status=http_status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request, taskId=None):
+        task_data = request.data
