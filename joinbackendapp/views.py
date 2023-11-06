@@ -5,9 +5,10 @@ from rest_framework.response import Response
 from rest_framework import status as http_status
 from rest_framework import viewsets
 from .models import Status, Task, Category, Contact, Subtask, Priority
-from .serializers import SubtaskSerializer, TaskSerializer, CategorySerializer, ContactSerializer
+from .serializers import PrioritySerializer, SubtaskSerializer, TaskSerializer, CategorySerializer, ContactSerializer
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated
+from django.http import JsonResponse
 
 
 
@@ -31,7 +32,11 @@ class LoginView(APIView):
         else:
             return Response({'detail': 'Invalid credentials'}, status=http_status.HTTP_400_BAD_REQUEST)
         
-        
+class PriorityListView(APIView):
+    def get(self, request):
+        priorities = Priority.choices  # Holt alle Wahlmöglichkeiten des Priority-Enums
+        serializer = PrioritySerializer(priorities, many=True)
+        return Response(serializer.data)       
         
         
 class TaskView(viewsets.ModelViewSet):
@@ -47,6 +52,10 @@ class TaskView(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         """Create a new task."""
         task = serializer.save(author=self.request.user)
+        
+    # PUT überschreiben
+    
+   # priority = Priority.objects.find(title = self....)
     
     
        
@@ -113,11 +122,22 @@ class CreateTaskWithSubtasks(APIView):
             priority_data = task_data.get('priority', '')
            
             # Kategorie und Priorität aus den Daten extrahieren und erstellen
+            # try:
+            #     category = Category.objects.get(id=category_data['id'])
+            # except Category.DoesNotExist:
+            #     print('Category existiert nicht')
+            # priority = Priority.objects.get(title=priority_data)
+            
             try:
                 category = Category.objects.get(id=category_data['id'])
             except Category.DoesNotExist:
-                print('Category existiert nicht')
-            priority = Priority.objects.get(title=priority_data)
+                return JsonResponse({'error': 'Category does not exist'}, status=400)
+
+            priority_value = task_data.get('priority', '')
+             # Überprüfen, ob der Wert von priority_value in Priority.choices vorhanden ist.
+            if not priority_value in Priority.values:
+                return JsonResponse({'error': 'Invalid priority value'}, status=400)
+            
 
             # Stelle sicher, dass assigned_data immer eine Liste ist
             assigned_data = task_data.get('assigned', [])
@@ -131,7 +151,7 @@ class CreateTaskWithSubtasks(APIView):
                 description=task_data['description'],
                 category=category,
                 dueDate=task_data['dueDate'],
-                priority=priority,
+                priority=priority_value,
                 status=status,
                 author=current_user,
             )

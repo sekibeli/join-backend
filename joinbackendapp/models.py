@@ -5,12 +5,20 @@ from django.contrib.auth.models import User
 from django.conf import settings
 
 # Create your models here.
-class Priority(models.Model):
-    title = models.CharField(max_length=50)
-    color = models.CharField(max_length=15)
+class Priority(models.TextChoices):
+        LOW = 'low','Low'
+        MEDIUM = 'medium', 'Medium'
+        URGENT = 'urgent', 'Urgent'
+        
+        # def __str__(self):
+        #     return  self.title
+        
+# class Priority(models.Model):
+#     title = models.CharField(max_length=50)
+#     color = models.CharField(max_length=15)
     
-    def __str__(self):
-        return self.title
+#     def __str__(self):
+#         return f'{self.id}. {self.title}'
     
 class Contact(models.Model):
     name = models.CharField(max_length=200)
@@ -56,7 +64,7 @@ class Task(models.Model):
     dueDate = models.DateTimeField(null=True, blank=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True, blank=True)
     assigned = models.ManyToManyField(Contact, related_name='tasks', blank=True)
-    priority = models.ForeignKey(Priority, on_delete=models.CASCADE, null=True, blank=True)
+    priority = models.CharField(max_length=10, choices=Priority.choices, default=Priority.LOW)
     status = models.ForeignKey(Status,  on_delete=models.CASCADE)
     
     def __str__(self):

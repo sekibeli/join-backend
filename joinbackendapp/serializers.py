@@ -10,12 +10,33 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ('id', 'username', 'email')
         
         
-class PrioritySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Priority
-        fields = '__all__'
+# class PrioritySerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Priority
+#         fields = '__all__'
 
+class PrioritySerializer(serializers.Serializer):
+    # Da es sich um ein einfaches Schlüssel-Wert-Paar handelt, 
+    # kannst du hier einfach einen CharField für den Schlüssel 
+    # und einen weiteren für den Wert definieren.
+    key = serializers.CharField()
+    value = serializers.CharField()
+    
+    def to_representation(self, obj):
+        # `to_representation` wird verwendet, um zu definieren, wie Objekte in serialisierte Daten umgewandelt werden.
+        # In diesem Fall wird einfach der Schlüssel (z.B. 'low') und der entsprechende lesbare Wert (z.B. 'Low') zurückgegeben.
+        return {
+            'key': obj[0],  # Der technische Schlüssel des Enums
+            'value': obj[1]  # Der menschenlesbare Wert des Enums
+        }
 
+    def to_internal_value(self, data):
+        # `to_internal_value` wird verwendet, um eingehende Daten in Python-Datenstrukturen umzuwandeln.
+        # Hier wird überprüft, ob der eingehende Schlüssel im Enum vorhanden ist und das entsprechende Enum-Objekt zurückgegeben.
+        try:
+            return Priority(data['key'])
+        except KeyError:
+            raise serializers.ValidationError("This is not a valid priority")
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -61,53 +82,53 @@ class TaskSerializer(serializers.ModelSerializer):
         model = Task
         fields = ('id', 'title', 'description', 'author', 'created', 'dueDate', 'category', 'assigned', 'subtasks', 'priority', 'status', 'status_id')
         
-    def update(self, instance, validated_data):
-        status_id = validated_data.pop('status_id', None)
-        print('StatusId neu:', status_id)
-        
-        if status_id:
-            instance.status = Status.objects.get(id=status_id)
-
-        # Hier aktualisieren Sie alle anderen Felder des Task-Modells
-        for attr, value in validated_data.items():
-            setattr(instance, attr, value)
-
-        instance.save()
-        return instance
-
     # def update(self, instance, validated_data):
-    #     instance.title = validated_data.get('title', instance.title)
-    #     instance.description = validated_data.get('description', instance.description)
-    #     instance.category = validated_data.get('category', instance.category)
-    #     instance.dueDate = validated_data.get('dueDate', instance.dueDate)
-    #     instance.priority = validated_data.get('priority', instance.priority)
-    #     instance.status = validated_data.get('status', instance.status)
-    #     assigned = validated_data.pop('assigned', None)
-    #     subtasks = validated_data.pop('subtasks', None)
+    #     status_id = validated_data.pop('status_id', None)
+    #     print('StatusId neu:', status_id)
+        
+    #     if status_id:
+    #         instance.status = Status.objects.get(id=status_id)
 
-    #     if assigned:
-    #         instance.assigned.set(assigned)
-    #     # ... any other fields you want to update directly on the Task
-
-    #     # Update related Subtasks
-
-    #     if subtasks is not None:
-    #         for subtask_data in subtasks:
-    #             subtask_id = subtask_data.get('id', None)
-    #             if subtask_id:
-    #                 try:
-    #                     subtask = instance.subtasks.get(id=subtask_id)
-    #                     for attr, value in subtask_data.items():
-    #                         setattr(subtask, attr, value)
-    #                     subtask.save()
-    #                 except Subtask.DoesNotExist:
-    #                     raise serializers.ValidationError("Subtask with id %s does not exist" % subtask_id)
-    #             else:
-    #                 # If the subtask does not exist, create it
-    #                 Subtask.objects.create(user=instance.user, task=instance, **subtask_data)
+    #     # Hier aktualisieren Sie alle anderen Felder des Task-Modells
+    #     for attr, value in validated_data.items():
+    #         setattr(instance, attr, value)
 
     #     instance.save()
     #     return instance
+
+    def update(self, instance, validated_data):
+        instance.title = validated_data.get('title', instance.title)
+        instance.description = validated_data.get('description', instance.description)
+        instance.category = validated_data.get('category', instance.category)
+        instance.dueDate = validated_data.get('dueDate', instance.dueDate)
+        instance.priority = validated_data.get('priority', instance.priority)
+        instance.status = validated_data.get('status', instance.status)
+        assigned = validated_data.pop('assigned', None)
+        subtasks = validated_data.pop('subtasks', None)
+
+        if assigned:
+            instance.assigned.set(assigned)
+        # ... any other fields you want to update directly on the Task
+
+        # Update related Subtasks
+
+        if subtasks is not None:
+            for subtask_data in subtasks:
+                subtask_id = subtask_data.get('id', None)
+                if subtask_id:
+                    try:
+                        subtask = instance.subtasks.get(id=subtask_id)
+                        for attr, value in subtask_data.items():
+                            setattr(subtask, attr, value)
+                        subtask.save()
+                    except Subtask.DoesNotExist:
+                        raise serializers.ValidationError("Subtask with id %s does not exist" % subtask_id)
+                else:
+                    # If the subtask does not exist, create it
+                    Subtask.objects.create(user=instance.user, task=instance, **subtask_data)
+
+        instance.save()
+        return instance
 
 
     def create(self, validated_data):
@@ -121,6 +142,7 @@ class TaskSerializer(serializers.ModelSerializer):
                 # You should include the user in the subtask_data
                 Subtask.objects.create(task=task, **subtask_data)
         return task
+    
 # class TaskSerializer(serializers.ModelSerializer):
 #     """Serializer for tasks."""
 
