@@ -25,9 +25,10 @@ class PrioritySerializer(serializers.Serializer):
     def to_representation(self, obj):
         # `to_representation` wird verwendet, um zu definieren, wie Objekte in serialisierte Daten umgewandelt werden.
         # In diesem Fall wird einfach der Schlüssel (z.B. 'low') und der entsprechende lesbare Wert (z.B. 'Low') zurückgegeben.
+        priority_display = {'LOW': 'low', 'MEDIUM': 'medium', 'URGENT': 'urgent'}
         return {
-            'key': obj[0],  # Der technische Schlüssel des Enums
-            'value': obj[1]  # Der menschenlesbare Wert des Enums
+            'key': obj,  # Der technische Schlüssel des Enums
+            'value': priority_display.get(obj, 'Unknown') 
         }
 
     def to_internal_value(self, data):

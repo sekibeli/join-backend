@@ -6,9 +6,9 @@ from django.conf import settings
 
 # Create your models here.
 class Priority(models.TextChoices):
-        LOW = 'low','Low'
-        MEDIUM = 'medium', 'Medium'
-        URGENT = 'urgent', 'Urgent'
+        LOW = 'low'
+        MEDIUM = 'medium'
+        URGENT = 'urgent'
         
         # def __str__(self):
         #     return  self.title
