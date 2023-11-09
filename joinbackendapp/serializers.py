@@ -16,18 +16,16 @@ class UserSerializer(serializers.ModelSerializer):
 #         fields = '__all__'
 
 class PrioritySerializer(serializers.Serializer):
-    # Da es sich um ein einfaches Schlüssel-Wert-Paar handelt, 
-    # kannst du hier einfach einen CharField für den Schlüssel 
-    # und einen weiteren für den Wert definieren.
     key = serializers.CharField()
     value = serializers.CharField()
     
     def to_representation(self, obj):
         # `to_representation` wird verwendet, um zu definieren, wie Objekte in serialisierte Daten umgewandelt werden.
         # In diesem Fall wird einfach der Schlüssel (z.B. 'low') und der entsprechende lesbare Wert (z.B. 'Low') zurückgegeben.
-        priority_display = {'LOW': 'low', 'MEDIUM': 'medium', 'URGENT': 'urgent'}
+        print(obj)
+        priority_display = {'low': 'low', 'medium': 'medium', 'urgent': 'urgent'}
         return {
-            'key': obj,  # Der technische Schlüssel des Enums
+            'key': obj,  
             'value': priority_display.get(obj, 'Unknown') 
         }
 
@@ -96,22 +94,35 @@ class TaskSerializer(serializers.ModelSerializer):
 
     #     instance.save()
     #     return instance
+    def validate(self, data):
+        data = super().validate(data) 
+        # Your validation logic
+        return data
 
     def update(self, instance, validated_data):
         instance.title = validated_data.get('title', instance.title)
         instance.description = validated_data.get('description', instance.description)
-        instance.category = validated_data.get('category', instance.category)
+        category_data = validated_data.pop('category', None)
+        if category_data is not None:
+            category_id = category_data.get('id', None)
+            if category_id:
+                category_instance = Category.objects.get(id=category_id)
+                instance.category = category_instance
         instance.dueDate = validated_data.get('dueDate', instance.dueDate)
         instance.priority = validated_data.get('priority', instance.priority)
-        instance.status = validated_data.get('status', instance.status)
+       # instance.status = validated_data.get('status', instance.status)
         assigned = validated_data.pop('assigned', None)
         subtasks = validated_data.pop('subtasks', None)
 
+        status_id = validated_data.pop('status_id', None)
+        print('StatusId neu:', status_id)
+        
+        if status_id:
+            instance.status = Status.objects.get(id=status_id)
+        
         if assigned:
             instance.assigned.set(assigned)
-        # ... any other fields you want to update directly on the Task
-
-        # Update related Subtasks
+   
 
         if subtasks is not None:
             for subtask_data in subtasks:
