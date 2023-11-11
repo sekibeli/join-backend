@@ -22,7 +22,7 @@ class PrioritySerializer(serializers.Serializer):
     def to_representation(self, obj):
         # `to_representation` wird verwendet, um zu definieren, wie Objekte in serialisierte Daten umgewandelt werden.
         # In diesem Fall wird einfach der Schlüssel (z.B. 'low') und der entsprechende lesbare Wert (z.B. 'Low') zurückgegeben.
-        print(obj)
+        
         priority_display = {'low': 'low', 'medium': 'medium', 'urgent': 'urgent'}
         return {
             'key': obj,  
@@ -76,10 +76,11 @@ class TaskSerializer(serializers.ModelSerializer):
     priority = PrioritySerializer()
     status = StatusSerializer()
     status_id = serializers.IntegerField(write_only=True, required=False)
-
+   
+   
     class Meta:
         model = Task
-        fields = ('id', 'title', 'description', 'author', 'created', 'dueDate', 'category', 'assigned', 'subtasks', 'priority', 'status', 'status_id')
+        fields = ('id', 'title', 'description', 'author', 'created', 'dueDate', 'category','assigned', 'subtasks', 'priority', 'status', 'status_id')
         
     # def update(self, instance, validated_data):
     #     status_id = validated_data.pop('status_id', None)
@@ -96,18 +97,32 @@ class TaskSerializer(serializers.ModelSerializer):
     #     return instance
     def validate(self, data):
         data = super().validate(data) 
+      
         # Your validation logic
         return data
 
     def update(self, instance, validated_data):
         instance.title = validated_data.get('title', instance.title)
         instance.description = validated_data.get('description', instance.description)
+    
         category_data = validated_data.pop('category', None)
+        print('validated data:', category_data)
+        
+        
+        # if category_data is not None:
+        #     category_id = category_data.get('id', None)
+        #     if category_id:
+        #         category_instance = Category.objects.get(id=category_id)
+        #         instance.category = category_instance
         if category_data is not None:
             category_id = category_data.get('id', None)
             if category_id:
-                category_instance = Category.objects.get(id=category_id)
-                instance.category = category_instance
+                try:
+                 category_instance = Category.objects.get(id=category_id)
+                 instance.category = category_instance
+                except Category.DoesNotExist:
+                    raise serializers.ValidationError("Category with id %s does not exist" % category_id)
+       
         instance.dueDate = validated_data.get('dueDate', instance.dueDate)
         instance.priority = validated_data.get('priority', instance.priority)
        # instance.status = validated_data.get('status', instance.status)
@@ -115,7 +130,8 @@ class TaskSerializer(serializers.ModelSerializer):
         subtasks = validated_data.pop('subtasks', None)
 
         status_id = validated_data.pop('status_id', None)
-        print('StatusId neu:', status_id)
+       
+      
         
         if status_id:
             instance.status = Status.objects.get(id=status_id)
