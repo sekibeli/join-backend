@@ -9,6 +9,6 @@ class TaskAdmin(admin.ModelAdmin):
 admin.site.register(Task, TaskAdmin)
 admin.site.register(Subtask)
 admin.site.register(Category)
-admin.site.register(Status)
+#admin.site.register(Status)
 # admin.site.register(Priority)
 admin.site.register(Contact)

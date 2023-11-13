@@ -8,8 +8,14 @@ from django.conf import settings
 class Priority(models.TextChoices):
         LOW = 'low'
         MEDIUM = 'medium'
-        URGENT = 'urgent'
-        
+        URGENT = 'Urgent'
+
+class Status(models.TextChoices):
+           todo = 'To do'
+           inProgress = 'In Progress' 
+           awaitingFeedback = 'Awaiting Feedback'
+           done = 'Done'
+           
         # def __str__(self):
         #     return  self.title
         
@@ -65,7 +71,7 @@ class Task(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True, blank=True)
     assigned = models.ManyToManyField(Contact, related_name='tasks', blank=True)
     priority = models.CharField(max_length=10, choices=Priority.choices, default=Priority.LOW)
-    status = models.ForeignKey(Status,  on_delete=models.CASCADE)
+    status =  models.CharField(max_length=30,choices=Status.choices, default=Status.todo)
     
     def __str__(self):
         return self.title   

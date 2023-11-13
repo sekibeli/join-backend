@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework import status as http_status
 from rest_framework import viewsets
 from .models import Status, Task, Category, Contact, Subtask, Priority
-from .serializers import PrioritySerializer, SubtaskSerializer, TaskSerializer, CategorySerializer, ContactSerializer
+from .serializers import SubtaskSerializer, TaskSerializer, CategorySerializer, ContactSerializer
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated
 from django.http import JsonResponse
@@ -35,8 +35,9 @@ class LoginView(APIView):
 class PriorityListView(APIView):
     def get(self, request):
         priorities = Priority.choices  # Holt alle Wahlmöglichkeiten des Priority-Enums
-        serializer = PrioritySerializer(priorities, many=True)
-        return Response(serializer.data)       
+        # serializer = PrioritySerializer(priorities, many=True)
+        # return Response(serializer.data)   
+        return priorities    
         
         
 class TaskView(viewsets.ModelViewSet):
@@ -53,7 +54,7 @@ class TaskView(viewsets.ModelViewSet):
         """Create a new task."""
         task = serializer.save(author=self.request.user)
     
-    def update(self, request, *args, **kwargs):
+    def update_old(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
@@ -185,6 +186,7 @@ class CreateTaskWithSubtasks(APIView):
                 )
                 subtask.save()
                 subtasks.append(subtask)
+            print('subtasks:', subtasks)    
          
             return Response(status=http_status.HTTP_201_CREATED)
         return Response(status=http_status.HTTP_400_BAD_REQUEST)
