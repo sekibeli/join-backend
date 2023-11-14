@@ -56,11 +56,11 @@ class Category(models.Model):
     
 
 
-class Status(models.Model):
-    title=  models.CharField(max_length=100)
+# class Status(models.Model):
+#     title=  models.CharField(max_length=100)
     
-    def __str__(self):
-        return self.title    
+#     def __str__(self):
+#         return self.title    
     
 class Task(models.Model):
     title = models.CharField(max_length=150)

@@ -133,18 +133,12 @@ class CreateTaskWithSubtasks(APIView):
             task_data = request.data
 
             # Zuerst die Kategorie und Priorität aus den Daten extrahieren
-            category_data = task_data.get('category', {})
-            priority_data = task_data.get('priority', '')
+            category_data = task_data.get('category', [])
+           # priority_data = task_data.get('priority', '')
            
-            # Kategorie und Priorität aus den Daten extrahieren und erstellen
-            # try:
-            #     category = Category.objects.get(id=category_data['id'])
-            # except Category.DoesNotExist:
-            #     print('Category existiert nicht')
-            # priority = Priority.objects.get(title=priority_data)
-            
+                    
             try:
-                category = Category.objects.get(id=category_data['id'])
+                category = Category.objects.get(id=category_data)
             except Category.DoesNotExist:
                 return JsonResponse({'error': 'Category does not exist'}, status=400)
 
@@ -158,7 +152,9 @@ class CreateTaskWithSubtasks(APIView):
             assigned_data = task_data.get('assigned', [])
 
             status_data = task_data.get('status', '')
-            status = Status.objects.get(title=status_data) 
+            if not status_data in Status.values:
+                return JsonResponse({'error': 'Invalid status value'}, status=400)
+           # status = Status.objects.get(title=status_data) 
             
             # Erstelle die Task-Instanz und setze die anderen Felder
             task = Task.objects.create(
@@ -167,7 +163,7 @@ class CreateTaskWithSubtasks(APIView):
                 category=category,
                 dueDate=task_data['dueDate'],
                 priority=priority_value,
-                status=status,
+                status=status_data,
                 author=current_user,
             )
 

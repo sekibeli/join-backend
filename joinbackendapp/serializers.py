@@ -9,33 +9,6 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ('id', 'username', 'email')
         
-        
-# class PrioritySerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Priority
-#         fields = '__all__'
-
-# class PrioritySerializer(serializers.Serializer):
-#     key = serializers.CharField()
-#     value = serializers.CharField()
-    
-#     def to_representation(self, obj):
-#         # `to_representation` wird verwendet, um zu definieren, wie Objekte in serialisierte Daten umgewandelt werden.
-#         # In diesem Fall wird einfach der Schlüssel (z.B. 'low') und der entsprechende lesbare Wert (z.B. 'Low') zurückgegeben.
-        
-#         priority_display = {'low': 'low', 'medium': 'medium', 'urgent': 'urgent'}
-#         return {
-#             'key': obj,  
-#             'value': priority_display.get(obj, 'Unknown') 
-#         }
-
-#     def to_internal_value(self, data):
-#         # `to_internal_value` wird verwendet, um eingehende Daten in Python-Datenstrukturen umzuwandeln.
-#         # Hier wird überprüft, ob der eingehende Schlüssel im Enum vorhanden ist und das entsprechende Enum-Objekt zurückgegeben.
-#         try:
-#             return Priority(data['key'])
-#         except KeyError:
-#             raise serializers.ValidationError("This is not a valid priority")
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -46,13 +19,6 @@ class SubtaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = Subtask
         fields = ('id', 'title', 'completed')
-
-# class StatusSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Status
-#         fields = ('id', 'title')
-
-# Hauptserialisierer für das Task-Modell
 
 
 class TaskUpdateSerializer(serializers.ModelSerializer):
@@ -75,12 +41,12 @@ class TaskSerializer(serializers.ModelSerializer):
     subtasks = serializers.PrimaryKeyRelatedField(many=True,  queryset=Subtask.objects.all())
     #priority = PrioritySerializer()
     #status = StatusSerializer()
-    status_id = serializers.IntegerField(write_only=True, required=False)
+   # status_id = serializers.IntegerField(write_only=True, required=False)
    
    
     class Meta:
         model = Task
-        fields = ('id', 'title', 'description', 'author', 'created', 'dueDate', 'category','assigned', 'subtasks', 'priority', 'status', 'status_id')
+        fields = ('id', 'title', 'description', 'author', 'created', 'dueDate', 'category','assigned', 'subtasks', 'priority', 'status')
         
     # def update(self, instance, validated_data):
     #     status_id = validated_data.pop('status_id', None)
@@ -157,17 +123,17 @@ class TaskSerializer(serializers.ModelSerializer):
     #     return instance
 
 
-    def create(self, validated_data):
-        assignees_data = validated_data.pop('assigned', None)
-        subtasks_data = validated_data.pop('subtasks', None)
-        task = Task.objects.create(**validated_data)
-        if assignees_data:
-            task.assignees.set(assignees_data)
-        if subtasks_data:
-            for subtask_data in subtasks_data:
-                # You should include the user in the subtask_data
-                Subtask.objects.create(task=task, **subtask_data)
-        return task
+    # def create(self, validated_data):
+    #     assignees_data = validated_data.pop('assigned', None)
+    #     subtasks_data = validated_data.pop('subtasks', None)
+    #     task = Task.objects.create(**validated_data)
+    #     if assignees_data:
+    #         task.assignees.set(assignees_data)
+    #     if subtasks_data:
+    #         for subtask_data in subtasks_data:
+    #             # You should include the user in the subtask_data
+    #             Subtask.objects.create(task=task, **subtask_data)
+    #     return task
     
 # class TaskSerializer(serializers.ModelSerializer):
 #     """Serializer for tasks."""
