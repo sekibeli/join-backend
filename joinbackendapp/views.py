@@ -54,27 +54,7 @@ class TaskView(viewsets.ModelViewSet):
         """Create a new task."""
         task = serializer.save(author=self.request.user)
     
-    def update_old(self, request, *args, **kwargs):
-        partial = kwargs.pop('partial', False)
-        instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data, partial=partial)
-        serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
-
-        if getattr(instance, '_prefetched_objects_cache', None):
-            # If 'prefetch_related' has been applied to a queryset, we need to
-            # forcibly invalidate the prefetch cache on the instance.
-            instance._prefetched_objects_cache = {}
-
-        return Response(serializer.data)
         
-    # PUT überschreiben
-    
-   # priority = Priority.objects.find(title = self....)
-    
-    
-       
-    
 class CategoryView(viewsets.ModelViewSet):
     serializer_class = CategorySerializer
  
@@ -134,9 +114,7 @@ class CreateTaskWithSubtasks(APIView):
 
             # Zuerst die Kategorie und Priorität aus den Daten extrahieren
             category_data = task_data.get('category', [])
-           # priority_data = task_data.get('priority', '')
-           
-                    
+                                        
             try:
                 category = Category.objects.get(id=category_data)
             except Category.DoesNotExist:
@@ -182,7 +160,7 @@ class CreateTaskWithSubtasks(APIView):
                 )
                 subtask.save()
                 subtasks.append(subtask)
-            print('subtasks:', subtasks)    
+            
          
             return Response(status=http_status.HTTP_201_CREATED)
         return Response(status=http_status.HTTP_400_BAD_REQUEST)

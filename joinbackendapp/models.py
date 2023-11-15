@@ -8,23 +8,14 @@ from django.conf import settings
 class Priority(models.TextChoices):
         LOW = 'low'
         MEDIUM = 'medium'
-        URGENT = 'Urgent'
+        URGENT = 'urgent'
 
 class Status(models.TextChoices):
            todo = 'To do'
            inProgress = 'In Progress' 
            awaitingFeedback = 'Awaiting Feedback'
            done = 'Done'
-           
-        # def __str__(self):
-        #     return  self.title
-        
-# class Priority(models.Model):
-#     title = models.CharField(max_length=50)
-#     color = models.CharField(max_length=15)
-    
-#     def __str__(self):
-#         return f'{self.id}. {self.title}'
+
     
 class Contact(models.Model):
     name = models.CharField(max_length=200)
@@ -54,13 +45,6 @@ class Category(models.Model):
     def __str__(self):
         return f'{self.id}. {self.title}' 
     
-
-
-# class Status(models.Model):
-#     title=  models.CharField(max_length=100)
-    
-#     def __str__(self):
-#         return self.title    
     
 class Task(models.Model):
     title = models.CharField(max_length=150)

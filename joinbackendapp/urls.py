@@ -12,9 +12,7 @@ router.register(r'assigned', AssignedView, basename="AssignedViewRoute")
 
 
 urlpatterns = [
-    # path('admin/', admin.site.urls),
     path("login/", LoginView.as_view(), name='login'),
     path("create_task_with_subtasks/", CreateTaskWithSubtasks.as_view(), name='create_task_with_subtasks'),
-  #  path("task/<int:task_id>/", CreateTaskWithSubtasks.as_view(), name='update_task'),
     path("", include(router.urls))
 ]
