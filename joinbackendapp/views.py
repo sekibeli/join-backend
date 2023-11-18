@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.contrib.auth import authenticate
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -9,6 +9,8 @@ from .serializers import SubtaskSerializer, TaskSerializer, CategorySerializer, 
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated
 from django.http import JsonResponse
+from rest_framework.decorators import action
+from rest_framework import status
 
 
 
@@ -90,6 +92,32 @@ class SubtaskView(viewsets.ModelViewSet):
                 return Subtask.objects.filter(id__in=subtask_ids)  # Filtert Subtasks basierend auf den übergebenen IDs
             return Subtask.objects.all()  
         return Subtask.objects.none()
+    
+    @action(detail=False, methods=['put'])
+    def update_many(self, request):
+        subtasks_data = request.data
+       
+        if not isinstance(subtasks_data, list):
+            return Response({'error': 'Expected a list of items but got type {}'.format(type(subtasks_data).__name__)}, 
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        for subtask_data in subtasks_data:
+            subtask_id = subtask_data.get('id')
+            try:
+                subtask = Subtask.objects.get(id=subtask_id)
+                for attr, value in subtask_data.items():
+                    if attr == 'task':
+                        # Überprüfen, ob das Task-Objekt existiert und es dann zuweisen
+                        task = get_object_or_404(Task, id=value)
+                        setattr(subtask, attr, task)
+                    else:
+                        setattr(subtask, attr, value)
+                subtask.save()
+            except Subtask.DoesNotExist:
+                return Response({'error': 'Subtask with id {} not found'.format(subtask_id)},
+                                status=status.HTTP_404_NOT_FOUND)
+
+        return Response({'message': 'Subtasks updated successfully'}, status=status.HTTP_200_OK)
     
 
 class AssignedView(viewsets.ModelViewSet):

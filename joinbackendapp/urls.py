@@ -14,5 +14,6 @@ router.register(r'assigned', AssignedView, basename="AssignedViewRoute")
 urlpatterns = [
     path("login/", LoginView.as_view(), name='login'),
     path("create_task_with_subtasks/", CreateTaskWithSubtasks.as_view(), name='create_task_with_subtasks'),
+    path('subtasks/update_many/', SubtaskView.as_view({'put': 'update_many'})),
     path("", include(router.urls))
 ]
