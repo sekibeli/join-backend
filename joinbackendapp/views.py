@@ -56,6 +56,13 @@ class TaskView(viewsets.ModelViewSet):
         """Create a new task."""
         task = serializer.save(author=self.request.user)
     
+    def update(self, request, *args, **kwargs):
+        kwargs['partial'] = True  # Erlaubt partielles Update
+        return super().update(request, *args, **kwargs)
+    
+    # def put(self, request, pk=None):
+    #     task = get_object_or_404(Task, pk=pk)
+    #     task_data = request.data
         
 class CategoryView(viewsets.ModelViewSet):
     serializer_class = CategorySerializer
@@ -86,12 +93,22 @@ class SubtaskView(viewsets.ModelViewSet):
     def get_queryset(self):
         current_user = self.request.user #eingloggten user holen
         subtask_ids = self.request.query_params.getlist('ids[]')  # Holt die Liste von IDs aus den Query-Parametern
+        task_id = self.request.query_params.get('task_id') #holt die task_id aus der url
         
-        if current_user.is_authenticated:
-            if subtask_ids:
-                return Subtask.objects.filter(id__in=subtask_ids)  # Filtert Subtasks basierend auf den übergebenen IDs
-            return Subtask.objects.all()  
-        return Subtask.objects.none()
+        if not current_user.is_authenticated:
+            return Subtask.objects.none()
+
+        queryset = Subtask.objects.all()
+
+        if subtask_ids:
+            # Filtert Subtasks basierend auf den übergebenen IDs
+            queryset = queryset.filter(id__in=subtask_ids)
+
+        if task_id:
+            # Filtert Subtasks basierend auf der Task-ID
+            queryset = queryset.filter(task_id=task_id)
+
+        return queryset
     
     @action(detail=False, methods=['put'])
     def update_many(self, request):
@@ -124,9 +141,7 @@ class SubtaskView(viewsets.ModelViewSet):
         task = get_object_or_404(Task, pk=pk)
         # task = self.get_object()
         subtasks_data = request.data
-        print(task)
-        print(subtasks_data)
-       
+     
         # Subaufgaben verarbeiten und speichern
         # subtasks_data = task_data.get('subtasks', [])
         subtasks = []
