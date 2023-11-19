@@ -15,5 +15,6 @@ urlpatterns = [
     path("login/", LoginView.as_view(), name='login'),
     path("create_task_with_subtasks/", CreateTaskWithSubtasks.as_view(), name='create_task_with_subtasks'),
     path('subtasks/update_many/', SubtaskView.as_view({'put': 'update_many'})),
+    path('tasks/<int:pk>/add_subtasks/', SubtaskView.as_view({'post': 'add_subtasks'})),
     path("", include(router.urls))
 ]

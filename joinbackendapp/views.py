@@ -119,6 +119,27 @@ class SubtaskView(viewsets.ModelViewSet):
 
         return Response({'message': 'Subtasks updated successfully'}, status=status.HTTP_200_OK)
     
+    @action(detail=True, methods=['post'])
+    def add_subtasks(self, request, pk=None):
+        task = get_object_or_404(Task, pk=pk)
+        # task = self.get_object()
+        subtasks_data = request.data
+        print(task)
+        print(subtasks_data)
+       
+        # Subaufgaben verarbeiten und speichern
+        # subtasks_data = task_data.get('subtasks', [])
+        subtasks = []
+        for subtask_info in subtasks_data:
+            subtask = Subtask(
+                task=task,
+                title=subtask_info.get('title', ''),
+                completed=subtask_info.get('completed', False)
+            )
+            subtask.save()
+            subtasks.append(subtask)
+
+        return Response({'status': 'subtasks added'}, status=status.HTTP_201_CREATED)
 
 class AssignedView(viewsets.ModelViewSet):
     serializer_class = ContactSerializer
