@@ -28,7 +28,6 @@ class TaskUpdateSerializer(serializers.ModelSerializer):
   
 
 class ContactSerializer(serializers.ModelSerializer):
-    # Hier verwenden wir 'TaskSerializer' als String. Die tatsächliche Bindung wird später erfolgen.
     tasks = serializers.StringRelatedField(many=True, read_only=True)
 
     class Meta:
@@ -36,12 +35,9 @@ class ContactSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class TaskSerializer(serializers.ModelSerializer):
-    # category = CategorySerializer()
     assigned = serializers.PrimaryKeyRelatedField(many=True,  queryset=Contact.objects.all())
     subtasks = serializers.PrimaryKeyRelatedField(many=True,  queryset=Subtask.objects.all())
-    #priority = PrioritySerializer()
-    #status = StatusSerializer()
-   # status_id = serializers.IntegerField(write_only=True, required=False)
+  
    
    
     class Meta:

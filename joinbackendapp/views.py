@@ -11,7 +11,7 @@ from rest_framework.permissions import IsAuthenticated
 from django.http import JsonResponse
 from rest_framework.decorators import action
 from rest_framework import status
-
+from django.db import transaction
 
 
 
@@ -111,6 +111,7 @@ class SubtaskView(viewsets.ModelViewSet):
         return queryset
     
     @action(detail=False, methods=['put'])
+    @transaction.atomic  #Die Datenbankaktionen werden einzeln ausgeführt 
     def update_many(self, request):
         subtasks_data = request.data
        
