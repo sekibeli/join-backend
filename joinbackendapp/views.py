@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework import status as http_status
 from rest_framework import viewsets
 from .models import Status, Task, Category, Contact, Subtask, Priority
-from .serializers import SubtaskSerializer, TaskSerializer, CategorySerializer, ContactSerializer
+from .serializers import SubtaskSerializer, TaskSerializer, CategorySerializer, ContactSerializer, UserSerializer
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated
 from django.http import JsonResponse
@@ -33,7 +33,15 @@ class LoginView(APIView):
             })
         else:
             return Response({'detail': 'Invalid credentials'}, status=http_status.HTTP_400_BAD_REQUEST)
-        
+
+class UserView(APIView):
+    permission_classes = [IsAuthenticated] 
+   
+    def get(self, request):
+        serializer = UserSerializer(request.user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+       
+                
 class PriorityListView(APIView):
     def get(self, request):
         priorities = Priority.choices  # Holt alle Wahlmöglichkeiten des Priority-Enums
