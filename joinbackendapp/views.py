@@ -95,6 +95,9 @@ class ContactView(viewsets.ModelViewSet):
             return Contact.objects.filter(author=current_user).order_by('name')
         return Contact.objects.none()
     
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
+        
 class SubtaskView(viewsets.ModelViewSet):
     serializer_class = SubtaskSerializer
     
