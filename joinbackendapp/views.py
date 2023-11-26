@@ -97,7 +97,11 @@ class ContactView(viewsets.ModelViewSet):
     
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
-        
+     
+    def update(self, request, *args, **kwargs):
+        kwargs['partial'] = True  # Erlaubt partielles Update
+        return super().update(request, *args, **kwargs)    
+    
 class SubtaskView(viewsets.ModelViewSet):
     serializer_class = SubtaskSerializer
     
