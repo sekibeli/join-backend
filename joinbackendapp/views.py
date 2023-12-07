@@ -49,6 +49,7 @@ class LoginView(APIView):
             return Response({
                 'token': token.key,
                 'user_id': user.pk
+                
             })
         else:
             return Response({'detail': 'Invalid credentials'}, status=http_status.HTTP_400_BAD_REQUEST)
