@@ -8,28 +8,30 @@ from rest_framework import status
 
 class backendTest(TestCase):
     
-    def test_login(self): 
-        response = self.client.get('/login/')
+    # def test_login(self): 
+    #     response = self.client.post('/login/')
+    #     self.assertEqual(response.status_code, 200)
+
+    def test_login_success(self):
+    # Benutzer erstellen, der für den Login verwendet wird
+        user = User.objects.create_user(username='testuser', email='testuser@example.com', password='testpassword')
+        user.save()
+
+    # Daten für die Login-Anfrage
+        login_data = {
+            'username': 'testuser',
+            'password': 'testpassword'
+         }
+
+    # POST-Anfrage an die LoginView senden
+        response = self.client.post('/login/', login_data)
+
+    # Überprüfen, ob der Statuscode 200 OK ist
         self.assertEqual(response.status_code, 200)
 
-    def setUp(self):
-        # Benutzer für den Test erstellen
-        self.user = User.objects.create_user(username='testuser', password='12345')
-        self.user.save()
+    # Optional: Überprüfen, ob ein Token in der Antwort enthalten ist
+        self.assertIn('token', response.data)
 
-    def test_user_view_authenticated(self):
-        # Benutzer für den Test authentifizieren
-        self.client.login(username='testuser', password='12345')
 
-        # URL für die UserView anpassen
-        url = '/path/to/your/user/view/'  # URL Ihrer UserView anpassen
 
-        # GET-Anfrage an die UserView
-        response = self.client.get(url)
-
-        # Überprüfen, ob der Statuscode 200 OK ist
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-        # Optional: Überprüfen der Antwortdaten
-        # (abhängig von der Struktur Ihrer UserSerializer-Daten)
-        # Beispiel: self.assertEqual(response.data['username'], self.user.username)
+   
