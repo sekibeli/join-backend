@@ -65,8 +65,6 @@ class UserView(APIView):
 class PriorityListView(APIView):
     def get(self, request):
         priorities = Priority.choices  # Holt alle Wahlmöglichkeiten des Priority-Enums
-        # serializer = PrioritySerializer(priorities, many=True)
-        # return Response(serializer.data)   
         return priorities    
         
         
@@ -88,10 +86,7 @@ class TaskView(viewsets.ModelViewSet):
         kwargs['partial'] = True  # Erlaubt partielles Update
         return super().update(request, *args, **kwargs)
     
-    # def put(self, request, pk=None):
-    #     task = get_object_or_404(Task, pk=pk)
-    #     task_data = request.data
-        
+         
 class CategoryView(viewsets.ModelViewSet):
     serializer_class = CategorySerializer
  
