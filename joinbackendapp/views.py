@@ -202,64 +202,6 @@ class AssignedView(viewsets.ModelViewSet):
        
 class CreateTaskWithSubtasks(APIView):
    
-    # def post(self, request):
-    #     current_user = self.request.user
-    #     if request.method == 'POST':
-    #         task_data = request.data
-
-    #         # Zuerst die Kategorie und Priorität aus den Daten extrahieren
-    #         category_data = task_data.get('category', [])
-                                        
-    #         try:
-    #             category = Category.objects.get(id=category_data)
-    #         except Category.DoesNotExist:
-    #             return JsonResponse({'error': 'Category does not exist'}, status=400)
-
-    #         priority_value = task_data.get('priority', '')
-    #          # Überprüfen, ob der Wert von priority_value in Priority.choices vorhanden ist.
-    #         if not priority_value in Priority.values:
-    #             return JsonResponse({'error': 'Invalid priority value'}, status=400)
-            
-
-    #         # Stelle sicher, dass assigned_data immer eine Liste ist
-    #         assigned_data = task_data.get('assigned', [])
-
-    #         status_data = task_data.get('status', '')
-    #         if not status_data in Status.values:
-    #             return JsonResponse({'error': 'Invalid status value'}, status=400)
-    #        # status = Status.objects.get(title=status_data) 
-            
-    #         # Erstelle die Task-Instanz und setze die anderen Felder
-    #         task = Task.objects.create(
-    #             title=task_data['title'],
-    #             description=task_data['description'],
-    #             category=category,
-    #             dueDate=task_data['dueDate'],
-    #             priority=priority_value,
-    #             status=status_data,
-    #             author=current_user,
-    #         )
-
-    #         # Verwende assigned_data, um die Many-to-Many-Beziehung festzulegen
-    #         assigned_ids = [contact['id'] for contact in assigned_data]
-    #         task.assigned.set(assigned_ids)
-
-    #         # Subaufgaben verarbeiten und speichern
-    #         subtasks_data = task_data.get('subtasks', [])
-    #         subtasks = []
-    #         for subtask_info in subtasks_data:
-    #             subtask = Subtask(
-    #                 task=task,
-    #                 title=subtask_info.get('title', ''),
-    #                 completed=subtask_info.get('completed', False)
-    #             )
-    #             subtask.save()
-    #             subtasks.append(subtask)
-            
-         
-    #         return Response(status=http_status.HTTP_201_CREATED)
-    #     return Response(status=http_status.HTTP_400_BAD_REQUEST)
-    
     def post(self, request):
         current_user = self.request.user
         if request.method != 'POST':

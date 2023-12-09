@@ -1,18 +1,14 @@
 from django.test import TestCase
 from django.test import Client
-from django.test import TestCase
 import unittest
 from django.contrib.auth.models import User
 from rest_framework import status
-from .models import Task
+from .models import Category, Task
 from rest_framework.test import APIClient
 
 class backendTest(TestCase):
     
-    # def test_login(self): 
-    #     response = self.client.post('/login/')
-    #     self.assertEqual(response.status_code, 200)
-
+ 
     def test_login_success(self):
     # Benutzer erstellen, der für den Login verwendet wird
         user = User.objects.create_user(username='testuser', email='testuser@example.com', password='testpassword')
@@ -65,6 +61,7 @@ class TaskViewTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         task.refresh_from_db()
         self.assertEqual(task.title, 'Updated Task')
+
 
 
 
