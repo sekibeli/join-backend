@@ -64,5 +64,19 @@ class TaskViewTest(TestCase):
 
 
 
+class createTaskTest(TestCase):
+    def setUp(self):
+        # Testbenutzer erstellen
+        self.user = User.objects.create_user(username='testuser', password='testpassword')
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.user)
 
+        # Test-Tasks erstellen
+        Task.objects.create(title="Task 1", description="Do task 1", author=self.user)
+        Task.objects.create(title="Task 2", description="Do task 2", author=self.user)
+        Task.objects.create(title="Task 3", description="Do task 3", author=self.user)
    
+    def test_validate_priority_valid(self):
+        # Testen, ob ein gültiger Priority-Wert akzeptiert wird
+        response = self.client.post('/create_task/', {'title': 'Task 4', 'description': 'Do task 4', 'priority': 'low'}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
