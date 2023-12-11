@@ -4,6 +4,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status as http_status
 from rest_framework import viewsets
+
+from joinbackendapp.utils import create_task_for_user
 from .models import Status, Task, Category, Contact, Subtask, Priority
 from .serializers import SubtaskSerializer, TaskSerializer, CategorySerializer, ContactSerializer, UserSerializer
 from rest_framework.authtoken.models import Token
@@ -13,6 +15,7 @@ from rest_framework.decorators import action
 from rest_framework import status
 from django.db import transaction
 from django.contrib.auth.models import User
+from django.db.models import Q
 
 
 
@@ -207,36 +210,22 @@ class CreateTaskWithSubtasks(APIView):
         current_user = self.request.user
         if request.method != 'POST':
             return Response(status=http_status.HTTP_400_BAD_REQUEST)
+        return create_task_for_user(current_user, request, self)
 
-        task_data = request.data
-        
-        category = self.validate_category(task_data)
-        priority_value = self.validate_priority(task_data)
-       
-        status_data = self.validate_status(task_data)
-       
-        task = self.create_task(task_data, category, priority_value, status_data, current_user)
-        print('TASK', task)
-        self.assign_task(task, task_data)
-        self.create_subtasks(task, task_data)
-
-        return Response(status=http_status.HTTP_201_CREATED)
-
-
-    
-
+ 
     def put(self, request, taskId=None):
         task_data = request.data
         
-    # def validate_category(self, task_data):
-    #     category_data = task_data.get('category', [])
-                                        
-    #     try:
-    #             category = Category.objects.get(id=category_data)
-    #     except Category.DoesNotExist:
-    #         return JsonResponse({'error': 'Category does not exist'}, status=400)
         
-    #     return category_data
+    def validate_category(self, task_data):
+        category_data = task_data.get('category', [])
+                                        
+        try:
+                category = Category.objects.get(id=category_data)
+        except Category.DoesNotExist:
+            return JsonResponse({'error': 'Category does not exist'}, status=400)
+        
+        return category_data
     
     
     def validate_category(self, task_data):
@@ -259,12 +248,14 @@ class CreateTaskWithSubtasks(APIView):
                 return JsonResponse({'error': 'Invalid priority value'}, status=400)
         return priority_value
     
+    
     def validate_status(self, task_data):
         status_data = task_data.get('status', '')
         if not status_data in Status.values:
                 return JsonResponse({'error': 'Invalid status value'}, status=400)
            # status = Status.objects.get(title=status_data) 
         return status_data
+    
            
     def create_task(self, task_data, category, priority_value, status_data, user):
         current_user = self.request.user
@@ -279,11 +270,13 @@ class CreateTaskWithSubtasks(APIView):
             )
         return task
     
+    
     def assign_task(self, task, task_data):
         # Stelle sicher, dass assigned_data immer eine Liste ist
         assigned_data = task_data.get('assigned', [])
         assigned_ids = [contact['id'] for contact in assigned_data]
         task.assigned.set(assigned_ids)
+    
         
     def create_subtasks(self, task, task_data):
          # Subaufgaben verarbeiten und speichern
@@ -357,3 +350,10 @@ class CreateTaskWithSubtasks(APIView):
 
     #         return Response(status=http_status.HTTP_201_CREATED)
     #     return Response(status=http_status.HTTP_400_BAD_REQUEST)
+    
+class TaskSearchView(APIView):
+    def get(self, request):
+        query = request.query_params.get('q', '')
+        tasks = Task.objects.filter(Q(title__icontains=query) | Q(description__icontains=query))
+        serializer = TaskSerializer(tasks, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

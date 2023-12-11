@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework import routers
-from .views import AssignedView, CreateTaskWithSubtasks, SignupView, SubtaskView, TaskView, CategoryView, ContactView, LoginView, UserView
+from .views import AssignedView, CreateTaskWithSubtasks, SignupView, SubtaskView, TaskSearchView, TaskView, CategoryView, ContactView, LoginView, UserView
 #from django.contrib import admin
 
 router = routers.DefaultRouter()
@@ -18,5 +18,6 @@ urlpatterns = [
     path("create_task_with_subtasks/", CreateTaskWithSubtasks.as_view(), name='create_task_with_subtasks'),
     path('subtasks/update_many/', SubtaskView.as_view({'put': 'update_many'})),
     path('tasks/<int:pk>/add_subtasks/', SubtaskView.as_view({'post': 'add_subtasks'})),
+    path('search/', TaskSearchView.as_view(), name='task-search'),
     path("", include(router.urls))
 ]
