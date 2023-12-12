@@ -354,6 +354,11 @@ class CreateTaskWithSubtasks(APIView):
 class TaskSearchView(APIView):
     def get(self, request):
         query = request.query_params.get('q', '')
-        tasks = Task.objects.filter(Q(title__icontains=query) | Q(description__icontains=query))
-        serializer = TaskSerializer(tasks, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        current_user = request.user
+        
+        if current_user.is_authenticated: 
+            tasks = Task.objects.filter(Q(title__icontains=query) | Q(description__icontains=query), author = current_user)
+            serializer = TaskSerializer(tasks, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response({"error": "User not authenticated"}, status=status.HTTP_401_UNAUTHORIZED)
