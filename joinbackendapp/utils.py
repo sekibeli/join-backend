@@ -2,7 +2,7 @@ from rest_framework.response import Response
 from rest_framework import status as http_status
 from django.http import JsonResponse
 
-from joinbackendapp.models import Category, Priority, Status
+# from joinbackendapp.models import Category, Priority, Status
 
 def create_task_for_user(current_user, request, self):
     task_data = request.data

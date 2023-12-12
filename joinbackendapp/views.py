@@ -217,15 +217,15 @@ class CreateTaskWithSubtasks(APIView):
         task_data = request.data
         
         
-    def validate_category(self, task_data):
-        category_data = task_data.get('category', [])
+    # def validate_category(self, task_data):
+    #     category_data = task_data.get('category', [])
                                         
-        try:
-                category = Category.objects.get(id=category_data)
-        except Category.DoesNotExist:
-            return JsonResponse({'error': 'Category does not exist'}, status=400)
+    #     try:
+    #             category = Category.objects.get(id=category_data)
+    #     except Category.DoesNotExist:
+    #         return JsonResponse({'error': 'Category does not exist'}, status=400)
         
-        return category_data
+    #     return category_data
     
     
     def validate_category(self, task_data):
