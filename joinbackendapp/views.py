@@ -126,7 +126,6 @@ class SubtaskView(viewsets.ModelViewSet):
     def get_queryset(self):
         current_user = self.request.user #eingloggten user holen
         subtask_ids = self.request.query_params.getlist('ids[]')  # Holt die Liste von IDs aus den Query-Parametern
-        # subtask_ids = [id for id in subtask_ids if id.isdigit()] 
         task_id = self.request.query_params.get('task_id') #holt die task_id aus der url
         
         if not current_user.is_authenticated:
@@ -145,7 +144,7 @@ class SubtaskView(viewsets.ModelViewSet):
         return queryset
     
     @action(detail=False, methods=['put'])
-    @transaction.atomic  #Die Datenbankaktionen werden einzeln ausgeführt 
+    @transaction.atomic  #Die Datenbankaktionen werden einzeln ausgeführt WICHTIG
     def update_many(self, request):
         subtasks_data = request.data
        
@@ -168,17 +167,15 @@ class SubtaskView(viewsets.ModelViewSet):
             except Subtask.DoesNotExist:
                 return Response({'error': 'Subtask with id {} not found'.format(subtask_id)},
                                 status=status.HTTP_404_NOT_FOUND)
-
         return Response({'message': 'Subtasks updated successfully'}, status=status.HTTP_200_OK)
+    
     
     @action(detail=True, methods=['post'])
     def add_subtasks(self, request, pk=None):
         task = get_object_or_404(Task, pk=pk)
-        # task = self.get_object()
         subtasks_data = request.data
      
         # Subaufgaben verarbeiten und speichern
-     
         subtasks = []
         for subtask_info in subtasks_data:
             subtask = Subtask(
@@ -200,8 +197,8 @@ class AssignedView(viewsets.ModelViewSet):
         
         if current_user.is_authenticated:
             if contact_ids:
-                return Contact.objects.filter(id__in=contact_ids)  # Filtert Subtasks basierend auf den übergebenen IDs
-            return Contact.objects.all()  # Oder irgendeine andere Standardlogik, die Sie möchten
+                return Contact.objects.filter(id__in=contact_ids) 
+            return Contact.objects.all()  
         return Contact.objects.none()
        
 class CreateTaskWithSubtasks(APIView):
@@ -215,18 +212,7 @@ class CreateTaskWithSubtasks(APIView):
  
     def put(self, request, taskId=None):
         task_data = request.data
-        
-        
-    # def validate_category(self, task_data):
-    #     category_data = task_data.get('category', [])
-                                        
-    #     try:
-    #             category = Category.objects.get(id=category_data)
-    #     except Category.DoesNotExist:
-    #         return JsonResponse({'error': 'Category does not exist'}, status=400)
-        
-    #     return category_data
-    
+  
     
     def validate_category(self, task_data):
         category_id = task_data.get('category', None)
@@ -253,7 +239,6 @@ class CreateTaskWithSubtasks(APIView):
         status_data = task_data.get('status', '')
         if not status_data in Status.values:
                 return JsonResponse({'error': 'Invalid status value'}, status=400)
-           # status = Status.objects.get(title=status_data) 
         return status_data
     
            
@@ -272,7 +257,7 @@ class CreateTaskWithSubtasks(APIView):
     
     
     def assign_task(self, task, task_data):
-        # Stelle sicher, dass assigned_data immer eine Liste ist
+        # assigned_data soll immer eine Liste sein
         assigned_data = task_data.get('assigned', [])
         assigned_ids = [contact['id'] for contact in assigned_data]
         task.assigned.set(assigned_ids)
@@ -291,65 +276,6 @@ class CreateTaskWithSubtasks(APIView):
                 subtask.save()
                 subtasks.append(subtask)
                 
-             
-              # ------------------------------  
-    # def post(self, request):
-    #     current_user = self.request.user
-    #     if request.method == 'POST':
-    #         task_data = request.data
-
-    #         # Zuerst die Kategorie und Priorität aus den Daten extrahieren
-    #         category_data = task_data.get('category', [])
-
-    #         try:
-    #             category = Category.objects.get(id=category_data)
-    #         except Category.DoesNotExist:
-    #             return JsonResponse({'error': 'Category does not exist'}, status=400)
-
-    #         priority_value = task_data.get('priority', '')
-    #          # Überprüfen, ob der Wert von priority_value in Priority.choices vorhanden ist.
-    #         if not priority_value in Priority.values:
-    #             return JsonResponse({'error': 'Invalid priority value'}, status=400)
-
-
-    #         # Stelle sicher, dass assigned_data immer eine Liste ist
-    #         assigned_data = task_data.get('assigned', [])
-
-    #         status_data = task_data.get('status', '')
-    #         if not status_data in Status.values:
-    #             return JsonResponse({'error': 'Invalid status value'}, status=400)
-    #        # status = Status.objects.get(title=status_data) 
-
-    #         # Erstelle die Task-Instanz und setze die anderen Felder
-    #         task = Task.objects.create(
-    #             title=task_data['title'],
-    #             description=task_data['description'],
-    #             category=category,
-    #             dueDate=task_data['dueDate'],
-    #             priority=priority_value,
-    #             status=status_data,
-    #             author=current_user,
-    #         )
-
-    #         # Verwende assigned_data, um die Many-to-Many-Beziehung festzulegen
-    #         assigned_ids = [contact['id'] for contact in assigned_data]
-    #         task.assigned.set(assigned_ids)
-
-    #         # Subaufgaben verarbeiten und speichern
-    #         subtasks_data = task_data.get('subtasks', [])
-    #         subtasks = []
-    #         for subtask_info in subtasks_data:
-    #             subtask = Subtask(
-    #                 task=task,
-    #                 title=subtask_info.get('title', ''),
-    #                 completed=subtask_info.get('completed', False)
-    #             )
-    #             subtask.save()
-    #             subtasks.append(subtask)
-
-
-    #         return Response(status=http_status.HTTP_201_CREATED)
-    #     return Response(status=http_status.HTTP_400_BAD_REQUEST)
     
 class TaskSearchView(APIView):
     def get(self, request):
