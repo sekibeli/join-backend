@@ -25,18 +25,18 @@ SECRET_KEY = 'django-insecure-*(1zxw9%^6!f8b+0)+=@3-+@8grpj8#f-)30+d!3&%@+&l&1*g
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-# ALLOWED_HOSTS = [
-#     'joinbackend.pythonanywhere.com',
-#     '127.0.0.1',
-#     'localhost',
-#     'julia-georgiew.developerakademie.net'
-# ]
+ALLOWED_HOSTS = [
+    'joinbackend.pythonanywhere.com',
+    '127.0.0.1',
+    'localhost',
+    'julia-georgiew.developerakademie.net'
+]
 CORS_ALLOW_ALL_ORIGINS = True
-# CORS_ALLOWED_ORIGINS = [
-#     'http://127.0.0.1:4200',
-#     'http://localhost:4200',
-#     'https://julia-georgiew.developerakademie.net'
-#     ]
+CORS_ALLOWED_ORIGINS = [
+    'http://127.0.0.1:4200',
+    'http://localhost:4200',
+    'https://julia-georgiew.developerakademie.net'
+    ]
 CORS_ALLOW_METHODS = ["DELETE", "GET", "OPTIONS", "PATCH", "POST", "PUT"]
 # Application definition
 CORS_ALLOW_CREDENTIALS = True
