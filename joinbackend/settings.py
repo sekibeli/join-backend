@@ -31,7 +31,7 @@ ALLOWED_HOSTS = [
     'localhost',
     'julia-georgiew.developerakademie.net'
 ]
-#CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOWED_ORIGINS = [
     'http://127.0.0.1:4200',
     'http://localhost:4200',
