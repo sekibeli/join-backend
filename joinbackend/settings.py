@@ -29,13 +29,15 @@ ALLOWED_HOSTS = [
     'joinbackend.pythonanywhere.com',
     '127.0.0.1',
     'localhost',
-    'julia-georgiew.developerakademie.net'
+    'julia-georgiew.developerakademie.net',
+    'myjoin.julia-georgiew.de'
 ]
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOWED_ORIGINS = [
     'http://127.0.0.1:4200',
     'http://localhost:4200',
-    'https://julia-georgiew.developerakademie.net'
+    'https://julia-georgiew.developerakademie.net',
+    'http://myjoin.julia-georgiew.de'
     ]
 CORS_ALLOW_METHODS = ["DELETE", "GET", "OPTIONS", "PATCH", "POST", "PUT"]
 # Application definition
