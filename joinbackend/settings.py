@@ -30,14 +30,16 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
     'localhost',
     'julia-georgiew.developerakademie.net',
-    'myjoin.julia-georgiew.de'
+    'myjoin.julia-georgiew.de',
+    'join.juiageorgiew.de'
 ]
 # CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOWED_ORIGINS = [
     'http://127.0.0.1:4200',
     'http://localhost:4200',
     'https://julia-georgiew.developerakademie.net',
-    'http://myjoin.julia-georgiew.de'
+    'http://myjoin.julia-georgiew.de',
+    'https://join.juliageorgiew.de'
     ]
 CORS_ALLOW_METHODS = ["DELETE", "GET", "OPTIONS", "PATCH", "POST", "PUT"]
 # Application definition
